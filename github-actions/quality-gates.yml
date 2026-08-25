@@ -1,0 +1,45 @@
+name: Agentic Quality Gates & Safety Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  audit-and-validate:
+    name: Lint, Typecheck, Security & Test Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # GATE 1: Auditoria de Segurança de Dependências (Supply Chain)
+      - name: 🛡️ Security Audit (CVEs Check)
+        run: npm audit --audit-level=high
+
+      # GATE 2: Validação Estática de Tipos (TypeScript Strict)
+      - name: 🔍 Static Typecheck
+        run: npm run typecheck || npx tsc --noEmit
+
+      # GATE 3: Linters & Conformidade Arquitetural
+      - name: 🎨 Linter & Formatting Check
+        run: npm run lint
+
+      # GATE 4: Testes Unitários & Pirâmide de Testes
+      - name: 🧪 Unit & Domain Tests
+        run: npm test -- --coverage
+
+      # GATE 5: Build de Produção
+      - name: 📦 Production Build Verification
+        run: npm run build

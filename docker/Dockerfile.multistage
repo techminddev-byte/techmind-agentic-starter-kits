@@ -1,0 +1,60 @@
+# ==============================================================================
+# TECHMIND PRODUCTION MULTI-STAGE DOCKERFILE
+# Otimizado para Segurança (Não-Root), Cache de Layers e Imagem Leve (<150MB)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# ESTÁGIO 1: DEPENDÊNCIAS
+# ------------------------------------------------------------------------------
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+# Instala dependências nativas necessárias apenas para build
+RUN apk add --no-cache libc6-compat
+
+# Copia apenas os manifestos para maximizar cache de layers do Docker
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+RUN npm ci --prefer-offline
+
+# ------------------------------------------------------------------------------
+# ESTÁGIO 2: BUILD
+# ------------------------------------------------------------------------------
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Compila o TypeScript para JavaScript puro em dist/
+ENV NODE_ENV=production
+RUN npm run build
+
+# Remove dependências de desenvolvimento para economizar espaço
+RUN npm prune --production
+
+# ------------------------------------------------------------------------------
+# ESTÁGIO 3: RUNNER DE PRODUÇÃO
+# ------------------------------------------------------------------------------
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Cria usuário sem privilégios de root para segurança estrita
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 appuser
+
+# Copia apenas os artefatos compilados e dependências de produção
+COPY --from=builder --chown=appuser:nodejs /app/dist ./dist
+COPY --from=builder --chown=appuser:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:nodejs /app/package.json ./package.json
+
+USER appuser
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+
+CMD ["node", "dist/main/server.js"]

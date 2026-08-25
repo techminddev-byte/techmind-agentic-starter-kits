@@ -1,0 +1,30 @@
+# ==============================================================================
+# TECHMIND AGENTIC STEERING RULES (.cursorrules)
+# ==============================================================================
+# Este arquivo governa a geração de código do Cursor IDE e agentes de IA.
+# Mantenha este arquivo na raiz do seu projeto.
+
+# 1. PRINCÍPIOS ARQUITETURAIS FUNDAMENTAIS
+- Siga estritamente os princípios de Clean Architecture e SOLID.
+- Regra da Dependência: O diretório `src/domain` NUNCA deve importar bibliotecas de banco de dados, ORMs, HTTP clients ou frameworks externos.
+- Use Cases: Devem ser classes em arquivos isolados em `src/application/use-cases/` com um único método público `execute()`.
+- Programe contra Interfaces: Todas as dependências externas de I/O (repositórios, gateways de pagamento, brokers) devem ser injetadas via interfaces (Ports).
+
+# 2. DESIGN DE TIPOS & DOMAIN-DRIVEN DESIGN (DDD)
+- Combata a "Primitive Obsession": Não passe tipos primitivos soltos (`string`, `number`) para regras críticas. Use Value Objects auto-validados (ex: `Email`, `Cpf`, `Money`).
+- Mutações de Estado: Mutações devem ocorrer exclusivamente através de métodos explícitos dentro das Entidades/Agregados de Domínio. Nunca use setters públicos anêmicos.
+
+# 3. TRATAMENTO DE ERROS & RESILIÊNCIA
+- NUNCA engula erros com blocos `try/catch` vazios ou com simples `console.log`.
+- Lance exceções customizadas de domínio (ex: `EntityNotFoundError`, `BusinessRuleViolationError`).
+- Operações assíncronas externas e chamadas de LLM devem ter timeouts explícitos e tratamento de Circuit Breaker.
+- Mutações com agentes devem implementar chaves de idempotência (`X-Idempotency-Key`).
+
+# 4. QUALIDADE DE CÓDIGO & MODULARIDADE
+- Tamanho de Arquivo: Mantenha os arquivos entre 80 e 250 linhas. Evite criar "God Files" monolíticos.
+- Single Responsibility: Cada arquivo deve ter um único propósito bem definido.
+- Tipagem Rigorosa: Evite o uso de `any` no TypeScript ou `dict` genérico sem TypedDict/Pydantic no Python.
+
+# 5. TESTES & TDD
+- Escreva testes unitários para todo novo Use Case ou Value Object.
+- Os testes devem rodar de forma isolada, mockando apenas as interfaces de portas de saída (Output Ports).
