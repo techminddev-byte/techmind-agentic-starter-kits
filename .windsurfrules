@@ -1,0 +1,22 @@
+# WINDSURF AGENTIC RULES — TECHMINDDEV
+# Universal rules for Cascade / Windsurf Agent
+
+## 1. ARCHITECTURE & CODE QUALITY
+- Follow Clean Architecture and Feature-First folder organization.
+- Keep all files under 200 lines of code. Split into sub-components when exceeding this limit.
+- Never write business or database logic directly inside UI widgets or view components.
+- Use strict typing (TypeScript / Dart) and validate all inputs with Zod / Pydantic.
+
+## 2. DATABASE & PERSISTENCE
+- Primary keys must use UUIDv7 (`uuid_generate_v7()`) or ULID. Never use exposed sequential integers.
+- All Supabase/PostgreSQL tables MUST enable Row Level Security (RLS).
+- Avoid N+1 queries by using explicit JOINs or `whereIn`.
+
+## 3. EXTERNAL APIS & RATE LIMITS (ANTI-BAN RULES)
+- Never make direct external API calls (YouTube, Google Maps, OpenAI) on frontend render without Cache-First layer.
+- Always apply batching (up to 50 IDs per request) and throttling (max 2 req/s via p-limit).
+- Include Exponential Backoff with Jitter for HTTP 429 and 403 (QuotaExceeded) errors.
+
+## 4. SECURITY
+- NEVER hardcode API keys or secrets in frontend code. Always use backend `.env` variables.
+- Validate all incoming webhooks using cryptographic signature verification (HMAC).
