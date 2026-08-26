@@ -1,20 +1,22 @@
-# CLAUDE.md — TechMind Agentic Guidelines for Claude Code
+# CLAUDE.md — TECHMINDDEV AGENTIC STARTER KIT
+# Canonical instructions for Anthropic's Claude Code CLI
 
-## Project Overview
-Este projeto segue a metodologia de Engenharia de Software para Agentes da TechMind Academy.
+## 🚀 Quick Commands
+- **Build:** `npm run build || flutter build web`
+- **Test:** `npm test || flutter test`
+- **Lint/Format:** `npm run lint && npm run format || dart format .`
+- **Typecheck:** `npx tsc --noEmit`
 
-## Build and Test Commands
-- `npm run build` or `pnpm build`: Constrói o projeto em produção
-- `npm test` or `pytest`: Executa a suíte de testes unitários e de integração
-- `npm run lint`: Valida conformidade de estilo e arquitetura
+## 🗺️ Architecture & Index Pointer
+- **ALWAYS** consult `PROJECT_INDEX.md` before searching across the disk.
+- Follow Clean Architecture with **Feature-First** structure (`src/features/{feature}/`).
+- Keep all files strictly under **200 lines of code**.
 
-## Architecture Guidelines
-1. **Separation of Concerns:**
-   - `domain/`: Regras de negócio puras, Entidades, Value Objects e Interfaces de Repositório (Zero dependências externas).
-   - `application/`: Casos de Uso (Use Cases) e DTOs de entrada/saída.
-   - `infrastructure/`: Implementações de banco de dados (ORM/SQL), APIs de terceiros, LLMs e servidores HTTP.
+## 🛡️ Database & Security Rules
+- Enable Row Level Security (RLS) on all Supabase/PostgreSQL tables.
+- Use UUIDv7 for primary keys (`uuid_generate_v7()`).
+- Never hardcode secret API keys in frontend bundles. Always use backend `.env` variables.
+- External API calls (YouTube, Maps, OpenAI) MUST use Cache-First and batching.
 
-2. **Code Style & Practices:**
-   - Programe para interfaces e use Injeção de Dependências no construtor.
-   - Trate erros lançando exceções tipadas de domínio.
-   - Mantenha funções e métodos pequenos e coesos.
+## 📌 Session Checkpoints
+- When completing tasks or when prompted, update `docs/CURRENT_STATE.md` with decisions, modified files and the next objective.
