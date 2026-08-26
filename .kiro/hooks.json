@@ -1,0 +1,9 @@
+{
+  "hooks": [
+    {
+      "trigger": "post-file-write",
+      "command": "npm run format || dart format .",
+      "description": "Formatação automática pós-edição de arquivos"
+    }
+  ]
+}
