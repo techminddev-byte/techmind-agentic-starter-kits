@@ -1,22 +1,25 @@
-# WINDSURF AGENTIC RULES — TECHMINDDEV
-# Universal rules for Cascade / Windsurf Agent
+# WINDSURF / CASCADE AGENT RULES — TechMindDev
 
-## 1. ARCHITECTURE & CODE QUALITY
-- Follow Clean Architecture and Feature-First folder organization.
-- Keep all files under 200 lines of code. Split into sub-components when exceeding this limit.
-- Never write business or database logic directly inside UI widgets or view components.
-- Use strict typing (TypeScript / Dart) and validate all inputs with Zod / Pydantic.
+## Architecture & Code Limits
+- Clean Architecture: Domain layer has ZERO external dependencies.
+- Max 200 lines per file. Max 40 lines per function. Single Responsibility.
+- Interfaces: Inject all repositories, payment gateways and brokers through interfaces.
 
-## 2. DATABASE & PERSISTENCE
-- Primary keys must use UUIDv7 (`uuid_generate_v7()`) or ULID. Never use exposed sequential integers.
-- All Supabase/PostgreSQL tables MUST enable Row Level Security (RLS).
-- Avoid N+1 queries by using explicit JOINs or `whereIn`.
+## Database & ORM
+- Use UUIDv7 / ULID for all primary keys.
+- Prevent N+1 queries by using Eager Loading with JOIN or IN clauses.
+- Use connection pooler in serverless environments.
 
-## 3. EXTERNAL APIS & RATE LIMITS (ANTI-BAN RULES)
-- Never make direct external API calls (YouTube, Google Maps, OpenAI) on frontend render without Cache-First layer.
-- Always apply batching (up to 50 IDs per request) and throttling (max 2 req/s via p-limit).
-- Include Exponential Backoff with Jitter for HTTP 429 and 403 (QuotaExceeded) errors.
+## Versioning & Commits
+- Follow SemVer: MAJOR (breaking), MINOR (feature), PATCH (fix).
+- Commit format: Conventional Commits (`feat:`, `fix:`, `feat!:`).
 
-## 4. SECURITY
-- NEVER hardcode API keys or secrets in frontend code. Always use backend `.env` variables.
-- Validate all incoming webhooks using cryptographic signature verification (HMAC).
+## Mobile & Flutter Cache
+- `pubspec.yaml`: `version: MAJOR.MINOR.PATCH+BUILD_NUMBER`.
+- Display version dynamically with PackageInfo.
+- Reset cache with `flutter clean` when troubleshooting.
+
+## Error Handling & Types
+- Strict types only (no `any`).
+- Throw typed domain exceptions. Never swallow errors in empty catch blocks.
+- Validate inputs with Zod schemas.

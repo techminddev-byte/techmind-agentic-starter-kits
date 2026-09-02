@@ -4,27 +4,42 @@
 # Este arquivo governa a geração de código do Cursor IDE e agentes de IA.
 # Mantenha este arquivo na raiz do seu projeto.
 
-# 1. PRINCÍPIOS ARQUITETURAIS FUNDAMENTAIS
+# 1. CLEAN ARCHITECTURE, SOLID & TAMANHO DE ARQUIVOS
 - Siga estritamente os princípios de Clean Architecture e SOLID.
-- Regra da Dependência: O diretório `src/domain` NUNCA deve importar bibliotecas de banco de dados, ORMs, HTTP clients ou frameworks externos.
+- "Programe para uma interface, não para uma implementação."
+- Limite de Tamanho: Mantenha cada arquivo com no MÁXIMO 200 linhas de código (tolerância máx: 250). Funções com máx 40 linhas.
+- Regra da Dependência: A pasta `src/domain` NUNCA deve importar bibliotecas de banco de dados, ORMs, HTTP clients ou frameworks externos.
 - Use Cases: Devem ser classes em arquivos isolados em `src/application/use-cases/` com um único método público `execute()`.
 - Programe contra Interfaces: Todas as dependências externas de I/O (repositórios, gateways de pagamento, brokers) devem ser injetadas via interfaces (Ports).
 
-# 2. DESIGN DE TIPOS & DOMAIN-DRIVEN DESIGN (DDD)
-- Combata a "Primitive Obsession": Não passe tipos primitivos soltos (`string`, `number`) para regras críticas. Use Value Objects auto-validados (ex: `Email`, `Cpf`, `Money`).
-- Mutações de Estado: Mutações devem ocorrer exclusivamente através de métodos explícitos dentro das Entidades/Agregados de Domínio. Nunca use setters públicos anêmicos.
+# 2. FAIL-FAST, VALUE OBJECTS & RESILIÊNCIA
+- Cláusulas Fail-Fast: Valide pré-condições no topo de todo método com Guard Clauses e aborte imediatamente se inválido.
+- Primitive Obsession: Use Value Objects auto-validados (ex: `Email`, `Money`, `Cpf`) em vez de tipos primitivos soltos.
+- Idempotência: Toda mutação crítica ou webhook deve usar `X-Idempotency-Key` e tabela de deduplicação.
+- Circuit Breaker & Timeouts: Chamadas de APIs externas e LLMs devem ter timeouts estritos (3-5s) e fallback via Circuit Breaker.
+- Prevenção de Dual-Write: Use Transactional Outbox ou filas assíncronas para eventos e notificações.
 
-# 3. TRATAMENTO DE ERROS & RESILIÊNCIA
-- NUNCA engula erros com blocos `try/catch` vazios ou com simples `console.log`.
-- Lance exceções customizadas de domínio (ex: `EntityNotFoundError`, `BusinessRuleViolationError`).
-- Operações assíncronas externas e chamadas de LLM devem ter timeouts explícitos e tratamento de Circuit Breaker.
-- Mutações com agentes devem implementar chaves de idempotência (`X-Idempotency-Key`).
+# 3. BANCO DE DADOS MODERNO & ORMs
+- Chaves Primárias: Use SEMPRE UUIDv7 (`uuid_generate_v7()`) ou ULID. NUNCA use UUIDv4 aleatório em índices B-Tree ou inteiros sequenciais expostos.
+- Anti-N+1: Proibido executar queries SQL/ORM dentro de loops. Use sempre Eager Loading (`JOIN`) ou cláusulas `IN (...)`.
+- Serverless Pooler: Em ambientes Serverless/Edge, use obrigatoriamente a porta do Pooler de Conexões (ex: porta 6543 do Supabase / PgBouncer).
+- Migrations: Toda alteração de schema deve ter migração versionada e reversível.
 
-# 4. QUALIDADE DE CÓDIGO & MODULARIDADE
-- Tamanho de Arquivo: Mantenha os arquivos entre 80 e 250 linhas. Evite criar "God Files" monolíticos.
-- Single Responsibility: Cada arquivo deve ter um único propósito bem definido.
-- Tipagem Rigorosa: Evite o uso de `any` no TypeScript ou `dict` genérico sem TypedDict/Pydantic no Python.
+# 4. VERSIONAMENTO SEMÂNTICO (SemVer 2.0.0) & RELEASES
+- Padrão de Versão: Siga o formato MAJOR.MINOR.PATCH (`1.2.3`).
+  * MAJOR: Breaking changes / quebra de contrato.
+  * MINOR: Novas features retrocompatíveis.
+  * PATCH: Bug fixes e refatorações internas.
+- Conventional Commits: Sugira sempre commits no padrão `feat:`, `fix:`, `feat!:`, `chore:`.
+- Changelog: Atualize o `CHANGELOG.md` no padrão Keep a Changelog a cada release.
 
-# 5. TESTES & TDD
-- Escreva testes unitários para todo novo Use Case ou Value Object.
-- Os testes devem rodar de forma isolada, mockando apenas as interfaces de portas de saída (Output Ports).
+# 5. MOBILE & FLUTTER CACHE-BUSTING
+- pubspec.yaml: Use sempre a sintaxe `version: MAJOR.MINOR.PATCH+BUILD_NUMBER` (ex: `1.4.2+48`).
+- Telemetria de Versão: Exiba a versão real na tela do app via `PackageInfo.fromPlatform()`.
+- Reset de Cache: Sugira `flutter clean && flutter pub get` e `./gradlew clean` quando houver inconsistência de build.
+
+# 6. QUALIDADE, TIPAGEM & SEGURANÇA
+- Proibido `any`: Use tipagem estrita no TypeScript (`strict: true`) e Pydantic/TypedDict no Python.
+- Zero Catch Silencioso: Proibido blocos `try/catch` vazios ou que apenas imprimem no console. Lance exceções de domínio tipadas.
+- Validação nas Bordas: Valide todos os inputs externos com Zod ou Pydantic.
+- Segredos Seguros: Senhas e chaves de API devem ser lidas estritamente de variáveis de ambiente (`.env`).

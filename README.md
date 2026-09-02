@@ -37,14 +37,18 @@ Este repositório fornece **a blindagem necessária para transformar qualquer ag
 
 | Diretório / Arquivo | Ferramenta | Descrição |
 | :--- | :---: | :--- |
-| [`.cursorrules`](file:///.cursorrules) | **Cursor IDE** | Regras universais de Clean Architecture, TDD e prevenção de alucinações. |
-| [`CLAUDE.md`](file:///CLAUDE.md) | **Claude Code** | Guia de contexto, comandos de terminal e restrições para agentes CLI. |
-| [`.kiro/steering/`](file:///.kiro/steering/) | **Kiro IDE** | Steering files modulares e hooks automáticos de enforcement. |
-| [`adrs/`](file:///adrs/) | **Arquitetura** | Template de *Architecture Decision Records* (ADRs) para versionar decisões com IA. |
-| [`docker/`](file:///docker/) | **DevOps** | `Dockerfile` multi-stage leve e seguro (não-root) + `docker-compose.yml`. |
-| [`github-actions/`](file:///github-actions/) | **CI/CD** | Pipeline de *Quality Gates* que barra Pull Requests com código quebrado de IA. |
-| [`mcp-server/`](file:///mcp-server/) | **MCP** | Boilerplate de Servidor Model Context Protocol (TypeScript) para criar Custom Tools. |
-| [`checklists/`](file:///checklists/) | **Auditoria** | Checklist de Auditoria Semântica para revisão de código gerado por IA. |
+| [`AGENTS.md`](AGENTS.md) | **Universal / Trae / Copilot** | Regras universais de Clean Arch, Fail-Fast, SemVer e Segurança para qualquer IDE. |
+| [`.cursorrules`](.cursorrules) | **Cursor IDE** | Regras universais de Clean Architecture, TDD e prevenção de alucinações. |
+| [`.windsurfrules`](.windsurfrules) | **Windsurf (Cascade)** | Regras de governança de código e arquitetura para o Windsurf. |
+| [`CLAUDE.md`](CLAUDE.md) | **Claude Code** | Guia de contexto, comandos de terminal e restrições para agentes CLI. |
+| [`.kiro/steering/`](.kiro/steering/) | **Kiro IDE** | Steering files modulares (Clean Arch, DB, SemVer, Flutter, Security) e hooks automáticos. |
+| [`.agents/rules/`](.agents/rules/) | **Google Antigravity** | Regras e convenções nativas para o Antigravity / Gemini. |
+| [`COMO_USAR_OS_KITS.md`](COMO_USAR_OS_KITS.md) | **Guia Rápido** | Manual passo a passo para aplicar o kit na sua IDE favorita. |
+| [`adrs/`](adrs/) | **Arquitetura** | Template de *Architecture Decision Records* (ADRs) para versionar decisões com IA. |
+| [`docker/`](docker/) | **DevOps** | `Dockerfile` multi-stage leve e seguro (non-root) + `docker-compose.yml`. |
+| [`github-actions/`](github-actions/) | **CI/CD** | Pipeline de *Quality Gates* que barra Pull Requests com código quebrado de IA. |
+| [`mcp-server/`](mcp-server/) | **MCP** | Boilerplate de Servidor Model Context Protocol (TypeScript) para criar Custom Tools. |
+| [`checklists/`](checklists/) | **Auditoria** | Checklist de Auditoria Semântica para revisão de código gerado por IA. |
 
 ---
 
